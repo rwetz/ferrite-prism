@@ -1,6 +1,6 @@
 [package]
 name = "ferrite-prism"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Ferrite audio analysis workbench for frequency balance, levels and stereo phase."
 authors = ["Ryan Wetzstein"]
 license = "Apache-2.0"
