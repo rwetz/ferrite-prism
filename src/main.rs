@@ -218,20 +218,21 @@ impl Render for Prism {
                         ),
                 )
                 .child(
-                    div()
-                        .id("analysis-content")
-                        .overflow_y_scroll()
-                        .flex_1()
-                        .min_h_0()
-                        .flex()
-                        .flex_col()
-                        .p_4()
-                        .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
-                            if let Some(path) = paths.paths().first() {
-                                this.load(path.clone(), cx);
-                            }
-                        }))
-                        .child(content),
+                    scroll_area("analysis-scroll").flex_1().min_h_0().child(
+                        div()
+                            .id("analysis-content")
+                            .size_full()
+                            .min_h(px(if self.report.is_some() { 680. } else { 0. }))
+                            .flex()
+                            .flex_col()
+                            .p_4()
+                            .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
+                                if let Some(path) = paths.paths().first() {
+                                    this.load(path.clone(), cx);
+                                }
+                            }))
+                            .child(content),
+                    ),
                 )
                 .child(
                     status_bar()
