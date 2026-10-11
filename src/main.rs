@@ -149,7 +149,7 @@ impl Render for Prism {
                 if report.levels.rms[ch] > 0. {
                     dsp::db(report.levels.peak[ch] / report.levels.rms[ch])
                 } else {
-                    "-inf".into()
+                    "N/A".into()
                 }
             };
             let graph = if self.mode == 0 {
@@ -164,7 +164,7 @@ impl Render for Prism {
                     .collect();
                 visual::trace(points, true, cx).into_any_element()
             };
-            div().flex().flex_col().size_full().gap_3()
+            div().flex().flex_col().size_full().min_h(px(640.)).gap_3()
                 .child(div().flex().items_center().gap_3().child(div().flex_1().min_w_0().overflow_hidden().child(track.name.clone()))
                     .child(segmented("graph-mode").option("Spectrum").option("Stereo").selected(self.mode).on_select(cx.listener(|this,index,_,cx|{this.mode = *index;cx.notify();}))))
                 .child(div().flex().flex_row().flex_wrap().gap_3()
@@ -220,6 +220,7 @@ impl Render for Prism {
                 .child(
                     div()
                         .id("analysis-content")
+                        .overflow_y_scroll()
                         .flex_1()
                         .min_h_0()
                         .flex()
