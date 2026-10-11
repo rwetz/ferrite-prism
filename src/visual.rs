@@ -1,0 +1,106 @@
+//! All drawing surfaces have explicit bounds; live PCM drives the marks.
+use ferrite_design::prelude::*;
+use gpui::{App, Bounds, IntoElement, Pixels, Window, canvas, div, fill, point, px, size};
+pub fn trace(frames: Vec<[f32; 2]>, vectors: bool, cx: &App) -> impl IntoElement {
+    let p = palette(cx);
+    let (paper, ink, grid) = (hsla(p.sunken), hsla(p.accent), hsla(p.line));
+    div().size_full().bg(paper).child(
+        canvas(
+            |_, _, _| {},
+            move |b: Bounds<Pixels>, _, w: &mut Window, _| {
+                let center = point(b.left() + b.size.width / 2., b.top() + b.size.height / 2.);
+                w.paint_quad(fill(
+                    Bounds::new(point(b.left(), center.y), size(b.size.width, px(1.))),
+                    grid,
+                ));
+                if vectors {
+                    w.paint_quad(fill(
+                        Bounds::new(point(center.x, b.top()), size(px(1.), b.size.height)),
+                        grid,
+                    ));
+                    let scale = b.size.width.min(b.size.height) * 0.42;
+                    for [l, r] in frames {
+                        let x = center.x + scale * (l - r) * 0.5;
+                        let y = center.y - scale * (l + r) * 0.5;
+                        w.paint_quad(fill(Bounds::new(point(x, y), size(px(2.), px(2.))), ink));
+                    }
+                } else {
+                    let step = b.size.width / frames.len().saturating_sub(1).max(1) as f32;
+                    for (i, pair) in frames.windows(2).enumerate() {
+                        let y = |f: [f32; 2]| {
+                            center.y - b.size.height * 0.44 * ((f[0] + f[1]) * 0.5).clamp(-1., 1.)
+                        };
+                        let (a, z) = (y(pair[0]), y(pair[1]));
+                        w.paint_quad(fill(
+                            Bounds::new(
+                                point(b.left() + step * i as f32, a.min(z)),
+                                size(step.max(px(1.)), (a - z).abs().max(px(1.))),
+                            ),
+                            ink,
+                        ));
+                    }
+                }
+            },
+        )
+        .size_full(),
+    )
+}
+pub fn spectrum(values: Vec<f32>, cx: &App) -> impl IntoElement {
+    let p = palette(cx);
+    let (paper, ink, line) = (hsla(p.sunken), hsla(p.accent), hsla(p.line));
+    div().size_full().bg(paper).child(
+        canvas(
+            |_, _, _| {},
+            move |b: Bounds<Pixels>, _, w: &mut Window, _| {
+                for fraction in [0.25, 0.5, 0.75] {
+                    w.paint_quad(fill(
+                        Bounds::new(
+                            point(b.left(), b.top() + b.size.height * fraction),
+                            size(b.size.width, px(1.)),
+                        ),
+                        line,
+                    ));
+                }
+                let step = b.size.width / values.len().max(1) as f32;
+                for (i, v) in values.iter().enumerate() {
+                    let h = b.size.height * v.clamp(0., 1.);
+                    if h > px(0.) {
+                        w.paint_quad(fill(
+                            Bounds::new(
+                                point(b.left() + step * i as f32, b.bottom() - h),
+                                size((step - px(2.)).max(px(1.)), h),
+                            ),
+                            ink,
+                        ));
+                    }
+                }
+            },
+        )
+        .size_full(),
+    )
+}
+pub fn overview(ranges: Vec<[f32; 2]>, cx: &App) -> impl IntoElement {
+    let p = palette(cx);
+    let (paper, ink) = (hsla(p.sunken), hsla(p.accent));
+    div().size_full().bg(paper).child(
+        canvas(
+            |_, _, _| {},
+            move |b: Bounds<Pixels>, _, w: &mut Window, _| {
+                let center = b.top() + b.size.height / 2.;
+                let step = b.size.width / ranges.len().max(1) as f32;
+                for (i, [lo, hi]) in ranges.iter().enumerate() {
+                    let top = center - b.size.height * 0.45 * hi.clamp(-1., 1.);
+                    let bottom = center - b.size.height * 0.45 * lo.clamp(-1., 1.);
+                    w.paint_quad(fill(
+                        Bounds::new(
+                            point(b.left() + step * i as f32, top),
+                            size(step.max(px(1.)), (bottom - top).max(px(1.))),
+                        ),
+                        ink,
+                    ));
+                }
+            },
+        )
+        .size_full(),
+    )
+}
