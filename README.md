@@ -50,6 +50,10 @@ A push to `main` prepares a unique version tag, builds and tests, then publishes
 
 Apache-2.0. Bundled font licenses and the Symphonia MPL-2.0 license accompany the binary. Symphonia 0.5.5 is used unmodified; its source is available from [the upstream project](https://github.com/pdeljanov/Symphonia) and [crates.io](https://crates.io/crates/symphonia/0.5.5). RustFFT is available under Apache-2.0 or MIT. See NOTICE and `assets/licenses/`.
 
+## Settings
+
+Open the sliders button in the title bar, press Ctrl+, or choose Settings from the command palette. All ten schemes, Dark/Light/System appearance, motion refresh rate (12 to 240 FPS), and row density apply immediately and persist per app. Save failures appear in Settings. Start with `--settings` to open the drawer directly. Ferrite launcher environment overrides take precedence at startup.
+
 ---
 
 <p align="center">

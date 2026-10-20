@@ -1,7 +1,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod dsp;
 mod prefs;
+mod prefs_store;
 mod probe;
+mod settings_ui;
 mod track;
 mod visual;
 mod worker;
@@ -14,6 +16,7 @@ use std::{path::PathBuf, sync::Arc};
 gpui::actions!(prism, [OpenSong]);
 struct Prism {
     palette: Entity<CommandPalette>,
+    settings: Entity<settings_ui::Settings>,
     _appearance: Subscription,
     track: Option<Arc<track::Track>>,
     report: Option<dsp::Report>,
@@ -26,6 +29,7 @@ struct Prism {
 impl Prism {
     fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
         let mut app = Self {
+            settings: cx.new(|_| settings_ui::Settings::new()),
             palette: cx.new(|cx| CommandPalette::new(window, cx)),
             _appearance: theme::follow_system(window),
             track: None,
@@ -68,6 +72,7 @@ impl Prism {
                         )
                     }),
             );
+            commands.push(settings_ui::settings_command(app.settings.clone()));
             p.set_commands(commands, cx);
         });
         if let Some(path) = cli_path() {
@@ -195,9 +200,14 @@ impl Render for Prism {
                     this.palette.update(cx, |p, cx| p.toggle(w, cx))
                 }))
                 .on_action(cx.listener(|this, _: &OpenSong, _, cx| this.open(cx)))
+                .on_action(cx.listener(|this, _: &settings_ui::ToggleSettings, _, cx| {
+                    this.settings.update(cx, |s, cx| s.toggle(cx));
+                }))
+                .child(self.settings.clone())
                 .child(self.palette.clone())
                 .child(
                     title_bar("Prism")
+                        .child(settings_ui::button(self.settings.clone()))
                         .child(
                             Button::new("menu")
                                 .icon(Icon::Menu)
@@ -277,6 +287,7 @@ fn main() {
         prefs::init(cx);
         cx.bind_keys([
             KeyBinding::new("ctrl-shift-p", TogglePalette, None),
+            KeyBinding::new("ctrl-,", settings_ui::ToggleSettings, None),
             KeyBinding::new("ctrl-o", OpenSong, None),
         ]);
         let options =
