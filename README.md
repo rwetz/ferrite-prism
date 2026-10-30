@@ -1,8 +1,20 @@
-# Prism
+<p align="center">
+  <img src="assets/logo.svg" width="128" height="128" alt="Prism logo">
+</p>
 
-A native Ferrite workbench for inspecting mono and stereo music bounces.
+<h1 align="center">Prism</h1>
 
-![Icon](assets/logo.svg)
+<p align="center">
+  A native Ferrite workbench for inspecting mono and stereo music bounces.
+</p>
+
+<p align="center">
+  <a href="https://github.com/rwetz/ferrite-prism/actions/workflows/ci.yml"><img src="https://github.com/rwetz/ferrite-prism/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/rwetz/ferrite-prism/releases/latest"><img src="https://img.shields.io/github/v/release/rwetz/ferrite-prism?color=F2A93B&labelColor=18181B" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-3D3D42?labelColor=18181B" alt="License"></a>
+</p>
+
+![Prism showing levels, spectrum and waveform for a song](docs/main.png)
 
 - Open or drop a song. Analysis runs on a dedicated worker and never plays audio.
 - Full-file sample peak, RMS, crest factor, stereo correlation and samples at or above full scale.
@@ -53,6 +65,14 @@ Apache-2.0. Bundled font licenses and the Symphonia MPL-2.0 license accompany th
 ## Settings
 
 Open the sliders button in the title bar, press Ctrl+, or choose Settings from the command palette. All ten schemes, Dark/Light/System appearance, motion refresh rate (12 to 240 FPS), and row density apply immediately and persist per app. Save failures appear in Settings. Start with `--settings` to open the drawer directly. Ferrite launcher environment overrides take precedence at startup.
+
+## Keys
+
+| Keys | |
+|---|---|
+| <kbd>Ctrl</kbd>+<kbd>O</kbd> | Open a file |
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> | Command palette |
+| <kbd>Ctrl</kbd>+<kbd>,</kbd> | Settings |
 
 ---
 
